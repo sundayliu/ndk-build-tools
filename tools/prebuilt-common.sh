@@ -706,7 +706,7 @@ handle_canadian_build ()
                 ABI_CONFIGURE_HOST=x86_64-w64-mingw32
                 HOST_TAG=windows-x86_64
             else
-                ABI_CONFIGURE_HOST=x86_64-w64-mingw32
+                ABI_CONFIGURE_HOST=i686-w64-mingw32
                 HOST_TAG=windows
             fi
             HOST_OS=windows
@@ -749,14 +749,14 @@ find_mingw_toolchain ()
     # On older Fedora it's 32-bit only and called i686-pc-mingw32-
     # so we just add more prefixes to the list to check.
     if [ "$HOST_ARCH" = "x86_64" -a "$TRY64" = "yes" ]; then
-        BINPREFIX=x86_64-w64-mingw32-
-        BINPREFIXLST="x86_64-w64-mingw32- amd64-mingw32msvc-"
+        BINPREFIX=x86_64-pc-mingw32msvc-
+        BINPREFIXLST="x86_64-pc-mingw32msvc- x86_64-w64-mingw32- amd64-mingw32msvc-"
         DEBIAN_NAME=mingw64
     else
         # we are trying 32 bit anyway, so forcing it to avoid build issues
         force_32bit_binaries
-        BINPREFIX=i686-w64-mingw32-
-        BINPREFIXLST="i586-mingw32msvc- i686-w64-mingw32-"
+        BINPREFIX=i586-pc-mingw32msvc-
+        BINPREFIXLST="i586-pc-mingw32msvc- i686-pc-mingw32- i586-mingw32msvc- i686-w64-mingw32-"
         DEBIAN_NAME=mingw32
     fi
 

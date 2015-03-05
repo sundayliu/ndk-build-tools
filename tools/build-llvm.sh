@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright (C) 2012 The Android Open Source Project
 #
@@ -293,6 +293,7 @@ fi
 
 BINUTILS_VERSION=$(get_default_binutils_version_for_llvm $TOOLCHAIN)
 
+dump "llvm_build_out:$LLVM_BUILD_OUT"
 run $SRC_DIR/$TOOLCHAIN/llvm/configure \
     --prefix=$TOOLCHAIN_BUILD_PREFIX \
     --host=$ABI_CONFIGURE_HOST \
@@ -467,6 +468,8 @@ else
     cp -p "$SRC_DIR/$TOOLCHAIN/llvm/tools/ndk-bc2native/ndk-bc2native.py" "$TOOLCHAIN_BUILD_PREFIX/bin/"
 fi
 
+dump "$TOOLCHAIN_BUILD_PREFIX"
+dump "$TOOLCHAIN_PATH"
 # copy to toolchain path
 run copy_directory "$TOOLCHAIN_BUILD_PREFIX" "$TOOLCHAIN_PATH"
 
@@ -563,7 +566,7 @@ fi
 if [ "$PACKAGE_DIR" ]; then
     ARCHIVE="$TOOLCHAIN-$HOST_TAG.tar.bz2"
     SUBDIR=$(get_toolchain_install_subdir $TOOLCHAIN $HOST_TAG)
-    dump "Packaging $ARCHIVE"
+    dump "Packaging $ARCHIVE,$NDK_DIR, $SUBDIR"
     pack_archive "$PACKAGE_DIR/$ARCHIVE" "$NDK_DIR" "$SUBDIR"
 fi
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Copyright (C) 2011 The Android Open Source Project
 #
@@ -66,12 +66,8 @@ if [ "$WITH_LIBBFD" ]; then
     fi
 fi
 
-echo "[ndk-stack] $CC"
 prepare_abi_configure_build
-echo "[ndk-stack] $CC"
 prepare_host_build
-
-echo "[ndk-stack] $CC"
 
 # Choose a build directory if not specified by --build-dir
 if [ -z "$BUILD_DIR" ]; then
@@ -84,15 +80,12 @@ fi
 rm -rf $BUILD_DIR
 mkdir -p $BUILD_DIR
 
-echo "[ndk-stack] $HOST_CFLAGS"
 prepare_canadian_toolchain $BUILD_DIR
 
-echo "[ndk-stack] $HOST_CFLAGS"
 CFLAGS=$HOST_CFLAGS" -O2 -s -ffunction-sections -fdata-sections"
 LDFLAGS=$HOST_LDFLAGS
 EXTRA_CONFIG=
 
-echo "[ndk-stack] CFLAGS:$CFLAGS"
 if [ "$HOST_OS" != "darwin" -a "$DARWIN" != "yes" ]; then
     LDFLAGS=$LDFLAGS" -Wl,-gc-sections"
 else

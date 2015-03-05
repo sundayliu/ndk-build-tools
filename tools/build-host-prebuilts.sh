@@ -44,7 +44,6 @@ do_SYSTEMS () { CUSTOM_SYSTEMS=true; SYSTEMS=$1; }
 
 ARCHS=$(find_ndk_unknown_archs)
 ARCHS="$DEFAULT_ARCHS $ARCHS"
-echo "$ARCHS"
 register_var_option "--arch=<list>" ARCHS "List of target archs to build for"
 
 PACKAGE_DIR=
@@ -103,7 +102,6 @@ BUILDTOOLS=$ANDROID_NDK_ROOT/build/tools
 
 if [ -z "$NO_GEN_PLATFORMS" ]; then
     echo "Preparing the build..."
-	echo "COMMAND:$BUILDTOOLS/gen-platforms.sh --minimal --dst-dir=$NDK_DIR --ndk-dir=$NDK_DIR --arch=$(spaces_to_commas $ARCHS)"
     run $BUILDTOOLS/gen-platforms.sh --minimal --dst-dir=$NDK_DIR --ndk-dir=$NDK_DIR --arch=$(spaces_to_commas $ARCHS)
     fail_panic "Could not generate minimal sysroot!"
 else
@@ -127,6 +125,7 @@ LLVM_VERSION_LIST=$(commas_to_spaces $LLVM_VERSION_LIST)
 if [ "$DARWIN_SSH" -a -z "$CUSTOM_SYSTEMS" ]; then
     SYSTEMS=" darwin-x86"
 fi
+
 FLAGS=
 if [ "$DRYRUN" = "yes" ]; then
     FLAGS=$FLAGS" --dryrun"
@@ -268,24 +267,20 @@ for SYSTEM in $SYSTEMS; do
 
     # First, ndk-stack
     echo "Building $SYSNAME ndk-stack"
-	echo "COMMAND:$BUILDTOOLS/build-ndk-stack.sh $TOOLCHAIN_FLAGS --with-libbfd --src-dir=$SRC_DIR"
     #run $BUILDTOOLS/build-ndk-stack.sh $TOOLCHAIN_FLAGS --with-libbfd --src-dir=$SRC_DIR
     #fail_panic "ndk-stack build failure!"
 
     echo "Building $SYSNAME ndk-depends"
-	echo "COMMAND:$BUILDTOOLS/build-ndk-depends.sh $TOOLCHAIN_FLAGS"
     #run $BUILDTOOLS/build-ndk-depends.sh $TOOLCHAIN_FLAGS
     #fail_panic "ndk-depends build failure!"
 
     echo "Building $SYSNAME ndk-make"
-	echo "COMMAND:$BUILDTOOLS/build-host-make.sh $TOOLCHAIN_FLAGS"
     #run $BUILDTOOLS/build-host-make.sh $TOOLCHAIN_FLAGS
     #fail_panic "make build failure!"
 
     echo "Building $SYSNAME ndk-awk"
-	echo "COMMAND:$BUILDTOOLS/build-host-awk.sh $TOOLCHAIN_FLAGS"
-    run $BUILDTOOLS/build-host-awk.sh $TOOLCHAIN_FLAGS
-    fail_panic "awk build failure!"
+    #run $BUILDTOOLS/build-host-awk.sh $TOOLCHAIN_FLAGS
+    #fail_panic "awk build failure!"
 
     # ToDo: perl in windows/darwin cross.
     MAKE_PERL=no
@@ -305,26 +300,22 @@ for SYSTEM in $SYSTEMS; do
 
     if [ "$MAKE_PERL" = "yes" ] ; then
         echo "Building $SYSNAME ndk-perl"
-		echo "COMMAND:$BUILDTOOLS/build-host-perl.sh $TOOLCHAIN_FLAGS $SRC_DIR"
-        #run $BUILDTOOLS/build-host-perl.sh $TOOLCHAIN_FLAGS "$SRC_DIR"
-        #fail_panic "perl build failure!"
+        run $BUILDTOOLS/build-host-perl.sh $TOOLCHAIN_FLAGS "$SRC_DIR"
+        fail_panic "perl build failure!"
     fi
 
     echo "Building $SYSNAME ndk-python"
-	echo "COMMAND:$BUILDTOOLS/build-host-python.sh $TOOLCHAIN_FLAGS --toolchain-src-dir=$SRC_DIR --systems=$SYSTEM --force"
     #run $BUILDTOOLS/build-host-python.sh $TOOLCHAIN_FLAGS "--toolchain-src-dir=$SRC_DIR" "--systems=$SYSTEM" "--force"
     #fail_panic "python build failure!"
 
     echo "Building $SYSNAME ndk-yasm"
-	echo "COMMAND:$BUILDTOOLS/build-host-yasm.sh $SRC_DIR $NDK_DIR $TOOLCHAIN_FLAGS"
     #run $BUILDTOOLS/build-host-yasm.sh "$SRC_DIR" "$NDK_DIR" $TOOLCHAIN_FLAGS
     #fail_panic "yasm build failure!"
 
     if [ "$SYSTEM" = "windows" ]; then
         echo "Building $SYSNAME toolbox"
-        echo "COMMAND:$BUILDTOOLS/build-host-toolbox.sh $FLAGS"
-		#run $BUILDTOOLS/build-host-toolbox.sh $FLAGS
-        #fail_panic "Windows toolbox build failure!"
+        run $BUILDTOOLS/build-host-toolbox.sh $FLAGS
+        fail_panic "Windows toolbox build failure!"
     fi
 
     # Then the toolchains
@@ -342,8 +333,7 @@ for SYSTEM in $SYSTEMS; do
 
         for TOOLCHAIN_NAME in $TOOLCHAIN_NAMES; do
             echo "Building $SYSNAME toolchain for $ARCH architecture: $TOOLCHAIN_NAME"
-            echo "COMMAND:$BUILDTOOLS/build-gcc.sh $SRC_DIR $NDK_DIR $TOOLCHAIN_NAME $TOOLCHAIN_FLAGS --with-python=prebuilt -j$BUILD_NUM_CPUS"
-			#run $BUILDTOOLS/build-gcc.sh "$SRC_DIR" "$NDK_DIR" $TOOLCHAIN_NAME $TOOLCHAIN_FLAGS --with-python=prebuilt -j$BUILD_NUM_CPUS
+            #run $BUILDTOOLS/build-gcc.sh "$SRC_DIR" "$NDK_DIR" $TOOLCHAIN_NAME $TOOLCHAIN_FLAGS --with-python=prebuilt -j$BUILD_NUM_CPUS
             #fail_panic "Could not build $TOOLCHAIN_NAME-$SYSNAME!"
         done
     done
@@ -355,24 +345,21 @@ for SYSTEM in $SYSTEMS; do
     fi
     for LLVM_VERSION in $LLVM_VERSION_LIST; do
         echo "Building $SYSNAME clang/llvm-$LLVM_VERSION"
-		echo "COMMAND:$BUILDTOOLS/build-llvm.sh $SRC_DIR $NDK_DIR llvm-$LLVM_VERSION $TOOLCHAIN_FLAGS $POLLY_FLAGS $CHECK_FLAG -j$BUILD_NUM_CPUS"
-        #run $BUILDTOOLS/build-llvm.sh "$SRC_DIR" "$NDK_DIR" "llvm-$LLVM_VERSION" $TOOLCHAIN_FLAGS $POLLY_FLAGS $CHECK_FLAG -j$BUILD_NUM_CPUS
-        #fail_panic "Could not build llvm for $SYSNAME"
+        run $BUILDTOOLS/build-llvm.sh "$SRC_DIR" "$NDK_DIR" "llvm-$LLVM_VERSION" $TOOLCHAIN_FLAGS $POLLY_FLAGS $CHECK_FLAG -j$BUILD_NUM_CPUS
+        fail_panic "Could not build llvm for $SYSNAME"
     done
 
     if [ ! -z "$LLVM_VERSION_LIST" ]; then
         # Deploy ld.mcld
-		echo "COMMAND:$PROGDIR/deploy-host-mcld.sh --package-dir=$PACKAGE_DIR --system=$SYSNAME"
-        #run $PROGDIR/deploy-host-mcld.sh --package-dir=$PACKAGE_DIR --systems=$SYSNAME
-        #fail_panic "Could not deploy ld.mcld for $SYSNAME"
+        run $PROGDIR/deploy-host-mcld.sh --package-dir=$PACKAGE_DIR --systems=$SYSNAME
+        fail_panic "Could not deploy ld.mcld for $SYSNAME"
     fi
 
     # We're done for this system
 done
 
 # Build tools common to all system
-echo "COMMAND:$BUILDTOOLS/build-analyzer.sh $SRC_DIR $NDK_DIR llvm-$DEFAULT_LLVM_VERSION --package-dir=$PACKAGE_DIR"
-#run $BUILDTOOLS/build-analyzer.sh "$SRC_DIR" "$NDK_DIR" "llvm-$DEFAULT_LLVM_VERSION" --package-dir="$PACKAGE_DIR"
+run $BUILDTOOLS/build-analyzer.sh "$SRC_DIR" "$NDK_DIR" "llvm-$DEFAULT_LLVM_VERSION" --package-dir="$PACKAGE_DIR"
 
 if [ "$PACKAGE_DIR" ]; then
     echo "Done, please look at $PACKAGE_DIR"

@@ -51,7 +51,6 @@ fi
 
 log "Using sources from: $AWK_SRCDIR"
 
-log "[ndk-stack] $CC"
 prepare_host_build
 
 BUILD_DIR=$NDK_TMPDIR
@@ -67,7 +66,6 @@ if [ "$VERBOSE2" = "yes" ]; then
   V=1
 fi
 
-log "[ndk-awk] $CC"
 log "Configuring the build"
 mkdir -p $BUILD_DIR && rm -rf $BUILD_DIR/*
 prepare_canadian_toolchain $BUILD_DIR
