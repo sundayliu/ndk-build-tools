@@ -300,8 +300,8 @@ for SYSTEM in $SYSTEMS; do
 
     if [ "$MAKE_PERL" = "yes" ] ; then
         echo "Building $SYSNAME ndk-perl"
-        run $BUILDTOOLS/build-host-perl.sh $TOOLCHAIN_FLAGS "$SRC_DIR"
-        fail_panic "perl build failure!"
+        #run $BUILDTOOLS/build-host-perl.sh $TOOLCHAIN_FLAGS "$SRC_DIR"
+        #fail_panic "perl build failure!"
     fi
 
     echo "Building $SYSNAME ndk-python"
@@ -314,8 +314,8 @@ for SYSTEM in $SYSTEMS; do
 
     if [ "$SYSTEM" = "windows" ]; then
         echo "Building $SYSNAME toolbox"
-        run $BUILDTOOLS/build-host-toolbox.sh $FLAGS
-        fail_panic "Windows toolbox build failure!"
+		# run $BUILDTOOLS/build-host-toolbox.sh $FLAGS
+		# fail_panic "Windows toolbox build failure!"
     fi
 
     # Then the toolchains
