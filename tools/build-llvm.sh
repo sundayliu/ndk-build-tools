@@ -427,8 +427,8 @@ fi
 rm -rf $TOOLCHAIN_BUILD_PREFIX/share
 
 UNUSED_LLVM_EXECUTABLES="
-bugpoint c-index-test clang-check clang-format clang-tblgen lli llvm-bcanalyzer
-llvm-config llvm-config-host llvm-cov llvm-diff llvm-dwarfdump llvm-extract llvm-ld
+bugpoint c-index-test clang-check clang-format
+llvm-config-host llvm-cov llvm-diff llvm-dwarfdump llvm-extract 
 llvm-mc llvm-nm llvm-mcmarkup llvm-objdump llvm-prof llvm-ranlib llvm-readobj llvm-rtdyld
 llvm-size llvm-stress llvm-stub llvm-symbolizer llvm-tblgen llvm-vtabledump macho-dump cloog
 llvm-vtabledump lli-child-target not count FileCheck llvm-profdata"
